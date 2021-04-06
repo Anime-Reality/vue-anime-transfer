@@ -67,7 +67,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import UploadButton from "vuetify-upload-button";
 import axios, { AxiosResponse } from "axios";
 // import Full from "./components/Full.vue";
 // import HelloWorld from "./components/HelloWorld.vue";
