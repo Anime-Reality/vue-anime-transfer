@@ -1,0 +1,1 @@
+declare 'vuetify-upload-button'
