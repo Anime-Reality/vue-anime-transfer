@@ -92,7 +92,7 @@ export default Vue.extend({
   methods: {
     async update(formData) {
       const response = await axios.post(
-        "http://localhost:8000/file/upload/",
+        "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
         formData,
         {
           headers: {
@@ -110,7 +110,7 @@ export default Vue.extend({
     },
     async download(filename: string) {
       const response = await axios.get(
-        `http://localhost:8000/file/download_finished/?filename=${filename}`
+        `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
       );
       if (response.status == 200) {
         alert("download done");
