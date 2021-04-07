@@ -63,17 +63,13 @@
               lazy-src="https://i.stack.imgur.com/y9DpT.jpg"
               contain
               :aspect-ratio="16 / 9"
-              class="pd-10 mr-10"
+              class="pd-10 mr-5"
               width="20%"
               height="20%"
             >
               <template v-slot:placeholder>
                 <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular
-                    :width="10"
-                    intermediate
-                    color="green"
-                  ></v-progress-circular>
+                  <vue-ellipse-progress :loading="!uploading && downloading" />
                 </v-row>
               </template>
             </v-img>
@@ -88,7 +84,9 @@
 import Vue from "vue";
 import axios, { AxiosResponse } from "axios";
 // import Full from "./components/Full.vue";
-// import HelloWorld from "./components/HelloWorld.vue";
+import VueEllipseProgress from "vue-ellipse-progress";
+Vue.use(VueEllipseProgress);
+
 interface FileUploadResponse {
   filename: string;
   uuid: string;
@@ -106,6 +104,9 @@ export default Vue.extend({
     processing: false,
     url: "",
     fetchURL: "",
+    circularValue: 0,
+    interval: 0,
+    downloading: false,
     //
   }),
   methods: {
@@ -122,11 +123,16 @@ export default Vue.extend({
       if (response.status == 200) {
         // alert("Upload done");
         this.file_object = response.data;
-        await this.download(this.file_object.filename);
+        this.uploading = false;
+        this.downloading = true;
+        setTimeout(
+          async () => await this.download(this.file_object.filename),
+          10000
+        );
+        // await this.download(this.file_object.filename);
       } else {
         this.file = "";
       }
-      this.uploading = false;
     },
     async download(filename: string) {
       const response = await axios.get(
@@ -140,18 +146,29 @@ export default Vue.extend({
         alert("Download file failed");
         // this.file = "";
       }
+      this.downloading = false;
+      // clearInterval(this.interval);
     },
     async upload() {
       const formData = new FormData();
       formData.append("file", this.file);
       this.uploading = true;
-      setTimeout(() => this.uploadImage(formData), 200);
+      // this.interval = setInterval(() => {
+      //   // console.log(this.circularValue);
+      //   this.circularValue += 100;
+      //   if (this.circularValue >= 10000000) {
+      //     this.circularValue = 0;
+      //   }
+      //   // parseInt((this.circularValue.toFixed(2)) * 100;
+      // }, 300);
+      setTimeout(() => this.uploadImage(formData), 2000);
       // await this.uploadImage(formData);
     },
     Preview_image() {
       console.log(this.file);
       this.url = URL.createObjectURL(this.file);
     },
+    mounted() {},
   },
 });
 </script>
