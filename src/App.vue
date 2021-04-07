@@ -118,7 +118,7 @@ export default Vue.extend({
         // const blob = new FileReader(response.data, {
         //   type: response.headers["content-type"],
         // });
-        this.fetchURL = `http://localhost:8000/file/download_finished/?filename=${filename}`;
+        this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
         // const reader = new FileReader();
         // reader.addEventListener("load", () => {
         //   this.fetchURL = reader.result as string;
