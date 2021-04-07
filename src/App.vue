@@ -25,41 +25,60 @@
           prepend-inner-icon="mdi-file"
           v-model="file"
         ></v-file-input>
-        <v-btn class="mr-10 mt-2" @click="upload" :loading="uploading"
-          >Upload</v-btn
+        <v-btn
+          class="mr-10 mt-2"
+          v-if="file"
+          @click="upload"
+          :loading="uploading"
+          >Upload & Process</v-btn
         >
       </v-row>
       <v-row justify="center" v-if="file">
-        <v-img
-          :src="url"
-          contain
-          :aspect-ratio="16 / 9"
-          width="300px"
-          height="300px"
-        >
-          <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular color="grey lighten-5"></v-progress-circular>
-            </v-row>
-          </template>
-        </v-img>
-        <v-img
-          :src="fetchURL"
-          lazy-src="https://i.stack.imgur.com/y9DpT.jpg"
-          contain
-          width="300px"
-          height="300px"
-        >
-          <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular
-                :width="10"
-                intermediate
-                color="green"
-              ></v-progress-circular>
-            </v-row>
-          </template>
-        </v-img>
+        <v-col cols="6">
+          <v-row class="TextCenter"><h3>Raw File</h3> </v-row>
+          <v-row>
+            <v-img
+              :src="url"
+              contain
+              :aspect-ratio="16 / 9"
+              class="pd-10"
+              width="20%"
+              height="20%"
+            >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular
+                    color="grey lighten-5"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
+          </v-row>
+        </v-col>
+        <v-col cols="6">
+          <v-row class="TextCenter"> <h3>Transfered File</h3> </v-row>
+          <v-row>
+            <v-img
+              :src="fetchURL"
+              lazy-src="https://i.stack.imgur.com/y9DpT.jpg"
+              contain
+              :aspect-ratio="16 / 9"
+              class="pd-10 mr-10"
+              width="20%"
+              height="20%"
+            >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular
+                    :width="10"
+                    intermediate
+                    color="green"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
+          </v-row>
+        </v-col>
       </v-row>
     </v-main>
   </v-app>
@@ -90,7 +109,7 @@ export default Vue.extend({
     //
   }),
   methods: {
-    async update(formData) {
+    async uploadImage(formData) {
       const response = await axios.post(
         "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
         formData,
@@ -101,40 +120,33 @@ export default Vue.extend({
         }
       );
       if (response.status == 200) {
-        alert("Upload done");
+        // alert("Upload done");
         this.file_object = response.data;
         await this.download(this.file_object.filename);
+      } else {
+        this.file = "";
       }
-      // handle file here. File will be an object.
-      // If multiple prop is true, it will return an object array of files.
+      this.uploading = false;
     },
     async download(filename: string) {
       const response = await axios.get(
         `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
       );
       if (response.status == 200) {
-        alert("download done");
+        // alert("Test Download Done");
         console.log(response);
-        // const blob = new FileReader(response.data, {
-        //   type: response.headers["content-type"],
-        // });
         this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
-        // const reader = new FileReader();
-        // reader.addEventListener("load", () => {
-        //   this.fetchURL = reader.result as string;
-        // });
-        // reader.readAsDataURL(new Blob([response.data]));
       } else {
-        alert("download file failed");
-        // TODO upload again
+        alert("Download file failed");
+        // this.file = "";
       }
     },
-    upload() {
+    async upload() {
       const formData = new FormData();
       formData.append("file", this.file);
-      this.uploading = false;
-      this.update(formData);
-      this.uploading = false;
+      this.uploading = true;
+      setTimeout(() => this.uploadImage(formData), 200);
+      // await this.uploadImage(formData);
     },
     Preview_image() {
       console.log(this.file);
@@ -143,3 +155,8 @@ export default Vue.extend({
   },
 });
 </script>
+<style scoped>
+.TextCenter {
+  justify-content: center;
+}
+</style>
