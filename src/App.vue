@@ -7,7 +7,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="" target="_blank" text>
+      <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text>
         <span class="mr-2">FAST API</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
