@@ -7,8 +7,8 @@
 
       <v-spacer></v-spacer>
 
-      <!-- <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text> -->
-      <v-btn href="http://localhost:8000/docs" target="_blank" text>
+      <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text>
+      <!-- <v-btn href="http://localhost:8000/docs" target="_blank" text> -->
         <span class="mr-2">FAST API</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
@@ -87,7 +87,8 @@
           class="mt-4" 
           outlined 
           color="blue darken-4" dark
-          @click="downloadToLocal"
+          :href="fetchURL"
+          target="_blank"
         >
               Download
         </v-btn>
@@ -130,8 +131,8 @@ export default Vue.extend({
   methods: {
     async uploadImage(formData) {
       const response = await axios.post(
-        // "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
-        "http://localhost:8000/file/upload/",
+        "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
+        // "http://localhost:8000/file/upload/",
         formData,
         {
           headers: {
@@ -155,20 +156,16 @@ export default Vue.extend({
         this.file = "";
       }
     },
-    downloadToLocal() {
-      window.open(this.fetchURL,"_blank");
-
-    },
     async download(filename: string) {
       const response = await axios.get(
-        //`https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
-        `http://localhost:8000/file/download_finished/?filename=${filename}`
+        `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
+        // `http://localhost:8000/file/download_finished/?filename=${filename}`
       );
       if (response.status == 200) {
         // alert("Test Download Done");
         console.log(response);
-        //this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
-        this.fetchURL = `http://localhost:8000/file/download_finished/?filename=${filename}`;
+        this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
+        // this.fetchURL = `http://localhost:8000/file/download_finished/?filename=${filename}`;
         this.canDownload = true
 
       } else {
