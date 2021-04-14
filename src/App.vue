@@ -1,13 +1,14 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="blue darken-4" dark>
       <div class="d-flex align-center">
-        <h2>Vue-Anime-Transfer</h2>
+        <h2>Samsan Tech Anime Transfer</h2>
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text>
+      <!-- <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text> -->
+      <v-btn href="http://localhost:8000/docs" target="_blank" text>
         <span class="mr-2">FAST API</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
@@ -27,6 +28,8 @@
         ></v-file-input>
         <v-btn
           class="mr-10 mt-2"
+          outlined 
+          color="blue darken-4" dark
           v-if="file"
           @click="upload"
           :loading="uploading"
@@ -45,13 +48,13 @@
               width="20%"
               height="20%"
             >
-              <template v-slot:placeholder>
+              <!-- <template v-slot:placeholder>
                 <v-row class="fill-height ma-0" align="center" justify="center">
                   <v-progress-circular
                     color="grey lighten-5"
                   ></v-progress-circular>
                 </v-row>
-              </template>
+              </template> -->
             </v-img>
           </v-row>
         </v-col>
@@ -59,11 +62,12 @@
           <v-row class="TextCenter"> <h3>Transfered File</h3> </v-row>
           <v-row>
             <v-img
+              :key="transferedImgKey"
               :src="fetchURL"
               lazy-src="https://i.stack.imgur.com/y9DpT.jpg"
               contain
               :aspect-ratio="16 / 9"
-              class="pd-10 mr-5"
+              class="pd-10"
               width="20%"
               height="20%"
             >
@@ -75,6 +79,18 @@
             </v-img>
           </v-row>
         </v-col>
+      </v-row>
+
+
+      <v-row justify="center" v-if="canDownload">
+        <v-btn 
+          class="mt-4" 
+          outlined 
+          color="blue darken-4" dark
+          @click="downloadToLocal"
+        >
+              Download
+        </v-btn>
       </v-row>
     </v-main>
   </v-app>
@@ -107,12 +123,15 @@ export default Vue.extend({
     circularValue: 0,
     interval: 0,
     downloading: false,
+    canDownload: false,
+    transferedImgKey: 0,
     //
   }),
   methods: {
     async uploadImage(formData) {
       const response = await axios.post(
-        "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
+        // "https://animetransfer-cecc2q6t6a-as.a.run.app/file/upload/",
+        "http://localhost:8000/file/upload/",
         formData,
         {
           headers: {
@@ -123,6 +142,7 @@ export default Vue.extend({
       if (response.status == 200) {
         // alert("Upload done");
         this.file_object = response.data;
+        this.canDownload = false
         this.uploading = false;
         this.downloading = true;
         setTimeout(
@@ -131,17 +151,26 @@ export default Vue.extend({
         );
         // await this.download(this.file_object.filename);
       } else {
+        this.uploading = false;
         this.file = "";
       }
     },
+    downloadToLocal() {
+      window.open(this.fetchURL,"_blank");
+
+    },
     async download(filename: string) {
       const response = await axios.get(
-        `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
+        //`https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
+        `http://localhost:8000/file/download_finished/?filename=${filename}`
       );
       if (response.status == 200) {
         // alert("Test Download Done");
         console.log(response);
-        this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
+        //this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
+        this.fetchURL = `http://localhost:8000/file/download_finished/?filename=${filename}`;
+        this.canDownload = true
+
       } else {
         alert("Download file failed");
         // this.file = "";
@@ -166,6 +195,13 @@ export default Vue.extend({
     },
     Preview_image() {
       console.log(this.file);
+      this.canDownload = false;
+      this.fetchURL = "";
+      if (this.transferedImgKey == 0) {
+        this.transferedImgKey = 1;
+      } else {
+        this.transferedImgKey = 0;
+      }
       this.url = URL.createObjectURL(this.file);
     },
     mounted() {},
