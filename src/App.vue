@@ -7,8 +7,12 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs" target="_blank" text>
-      <!-- <v-btn href="http://localhost:8000/docs" target="_blank" text> -->
+      <v-btn
+        href="https://animetransfer-cecc2q6t6a-as.a.run.app/docs"
+        target="_blank"
+        text
+      >
+        <!-- <v-btn href="http://localhost:8000/docs" target="_blank" text> -->
         <span class="mr-2">FAST API</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
@@ -28,8 +32,9 @@
         ></v-file-input>
         <v-btn
           class="mr-10 mt-2"
-          outlined 
-          color="blue darken-4" dark
+          outlined
+          color="blue darken-4"
+          dark
           v-if="file"
           @click="upload"
           :loading="uploading"
@@ -81,16 +86,16 @@
         </v-col>
       </v-row>
 
-
       <v-row justify="center" v-if="canDownload">
-        <v-btn 
-          class="mt-4" 
-          outlined 
-          color="blue darken-4" dark
+        <v-btn
+          class="mt-4"
+          outlined
+          color="blue darken-4"
+          dark
           :href="fetchURL"
           target="_blank"
         >
-              Download
+          Download
         </v-btn>
       </v-row>
     </v-main>
@@ -143,14 +148,14 @@ export default Vue.extend({
       if (response.status == 200) {
         // alert("Upload done");
         this.file_object = response.data;
-        this.canDownload = false
+        this.canDownload = false;
         this.uploading = false;
         this.downloading = true;
-        setTimeout(
-          async () => await this.download(this.file_object.filename),
-          10000
-        );
-        // await this.download(this.file_object.filename);
+        // setTimeout(
+        //   async () => await this.download(this.file_object.filename),
+        //   10000
+        // );
+        await this.download(this.file_object.filename);
       } else {
         this.uploading = false;
         this.file = "";
@@ -166,8 +171,7 @@ export default Vue.extend({
         console.log(response);
         this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`;
         // this.fetchURL = `http://localhost:8000/file/download_finished/?filename=${filename}`;
-        this.canDownload = true
-
+        this.canDownload = true;
       } else {
         alert("Download file failed");
         // this.file = "";
@@ -187,8 +191,8 @@ export default Vue.extend({
       //   }
       //   // parseInt((this.circularValue.toFixed(2)) * 100;
       // }, 300);
-      setTimeout(() => this.uploadImage(formData), 2000);
-      // await this.uploadImage(formData);
+      // setTimeout(() => this.uploadImage(formData), 2000);
+      await this.uploadImage(formData);
     },
     Preview_image() {
       console.log(this.file);
