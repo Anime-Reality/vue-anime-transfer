@@ -5,9 +5,11 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import "roboto-fontface/css/roboto/roboto-fontface.css";
 import "@mdi/font/css/materialdesignicons.css";
+import ImagePainter from 'vue-image-painter'
 
 Vue.config.productionTip = false;
 import VueSocialSharing from "vue-social-sharing";
+Vue.use(ImagePainter)
 import { WebCam } from "vue-web-cam";
 import Vuex from 'vuex'
 
