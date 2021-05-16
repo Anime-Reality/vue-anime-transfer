@@ -67,10 +67,10 @@
           </v-row>
         </v-col>
       </v-row>
-
-      <v-row justify="center" v-if="canDownload">
+      <br>
+      <v-row justify="center" v-if="canDownload" class="p-10" style="margin-top:50px">
         <v-btn
-          class="mt-4"
+          class="mt-4 mx-10"
           outlined
           color="blue darken-4"
           dark
@@ -78,6 +78,18 @@
           target="_blank"
         >
           Download
+        </v-btn>
+        <v-btn class="mt-2" outlined dark>
+          <ShareNetwork
+              network="facebook"
+              :url="fetchURL"
+              title="Do u want to be in anime world? Let's try you can be or not"
+              description="https://anime-transfer.netlify.app/"
+              quote="Let's transfer your world to anime reality. - Samsan CP"
+              hashtags="AnimeTransfer, SamsanTransfer"
+            >
+              <h2>Share on Facebook</h2>
+          </ShareNetwork>
         </v-btn>
       </v-row>
     </v-main>
@@ -136,6 +148,7 @@ export default class Demo extends Vue {
         this.file = "";
       }
     }
+
     async download(filename: string) {
       const response = await axios.get(
         `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
@@ -154,6 +167,7 @@ export default class Demo extends Vue {
       this.downloading = false;
       // clearInterval(this.interval);
     }
+
     async upload() {
       const formData = new FormData();
       formData.append("file", this.file);
@@ -169,6 +183,7 @@ export default class Demo extends Vue {
       // setTimeout(() => this.uploadImage(formData), 2000);
       await this.uploadImage(formData);
     }
+
     Preview_image() {
       console.log(this.file);
       this.canDownload = false;
