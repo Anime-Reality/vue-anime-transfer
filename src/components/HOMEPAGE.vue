@@ -2,7 +2,7 @@
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
-        <v-img :src="require('../assets/show.jpeg')" class="my-3" contains />
+        <v-img :src="require('../assets/show2.png')" class="my-3" contains />
       </v-col>
 
       <v-col class="mb-4">
@@ -67,48 +67,11 @@ export default Vue.extend({
       },
       {
         text: 'Github',
-        href: 'https://github.com/vuetifyjs/vuetify',
+        href: 'https://github.com/Anime-Reality',
       },
       {
         text: 'Collection',
         href: '',
-      },
-    ],
-    importantLinks: [
-      {
-        text: 'Documentation',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Chat',
-        href: 'https://community.vuetifyjs.com',
-      },
-      {
-        text: 'Made with Vuetify',
-        href: 'https://madewithvuejs.com/vuetify',
-      },
-      {
-        text: 'Twitter',
-        href: 'https://twitter.com/vuetifyjs',
-      },
-      {
-        text: 'Articles',
-        href: 'https://medium.com/vuetify',
-      },
-    ],
-    whatsNext: [
-      {
-        text: 'Explore implementation and roadmap',
-        href: 'https://vuetifyjs.com/components/api-explorer',
-      },
-      {
-        text: 'Select a layout',
-        href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href:
-          'https://vuetifyjs.com/getting-started/frequently-asked-questions',
       },
     ],
   }),

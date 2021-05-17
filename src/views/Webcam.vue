@@ -21,9 +21,28 @@
           class="px-1 ml-5"
           style="width: 80%;"
         >
-          TRANSFER in {{ seconds.toFixed(2) }}
+          TRANSFER in {{ seconds.toFixed(2) }} S
           <!-- {{ seconds % 3 == 0 ? '...' : seconds % 3 == 1 ? '..' : '.' }} -->
         </v-btn>
+        <v-btn-toggle
+          v-model="fpsOption"
+          tile
+          color="deep-purple accent-3"
+          group
+        >
+          <v-btn value="1">
+            1 FPS
+          </v-btn>
+          <v-btn value="5">
+            5 FPS
+          </v-btn>
+          <v-btn value="10">
+            10 FPS
+          </v-btn>
+          <v-btn value="30">
+            30 FPS
+          </v-btn>
+        </v-btn-toggle>
       </v-col>
       <v-col class="mt-3">
         <v-btn
@@ -90,6 +109,7 @@ export default class Webcam extends Vue {
   deviceId: any = null
   devices: { deviceId: string }[] = []
   model = 0
+  fpsOption = '1'
   colors = ['primary', 'secondary', 'yellow darken-2', 'red', 'orange']
   processing = false
 
@@ -111,8 +131,6 @@ export default class Webcam extends Vue {
       return this.urls[this.currentIndex]
     }
   }
-
-  handleInterval: any
 
   up = 1
   nextIndex() {
@@ -162,11 +180,18 @@ export default class Webcam extends Vue {
   }
 
   maxIndex = 0
-  maxSeconds = 1
+  maxSeconds = 5
   seconds = this.maxSeconds
-  recordsPersecond = 30
+
+  get recordsPerSecond() {
+    if (this.fpsOption) {
+      return parseInt(this.fpsOption)
+    }
+    return 2
+    // return 2
+  }
   async onCapture() {
-    this.seconds = this.seconds - 1 / this.recordsPersecond
+    this.seconds = this.seconds - 1 / this.recordsPerSecond
     const webcamRef: any = this.$refs.webcam
     this.img = webcamRef.capture()
     this.upload(this.maxIndex)
@@ -180,7 +205,7 @@ export default class Webcam extends Vue {
       this.processing = false
       this.handleInterval = setInterval(
         this.nextIndex,
-        2000 / this.recordsPersecond,
+        1000 / this.recordsPerSecond,
       )
     }
   }
@@ -194,15 +219,18 @@ export default class Webcam extends Vue {
   }
 
   onReset() {
+    let webcamRef: any = this.$refs.webcam
+    webcamRef.stop()
     clearInterval(this.captureInterval)
+    clearInterval(this.handleInterval)
     this.hideWebcam = false
     this.seconds = this.maxSeconds
-    const webcamRef: any = this.$refs.webcam
-    webcamRef.stop()
+    webcamRef = this.$refs.webcam
     webcamRef.start()
   }
 
   captureInterval: any
+  handleInterval: any
   hideWebcam = false
   transfer() {
     const webcamRef: any = this.$refs.webcam
@@ -212,13 +240,13 @@ export default class Webcam extends Vue {
     this.processing = true
     this.captureInterval = setInterval(
       this.onCapture,
-      1000 / this.recordsPersecond,
+      1000 / this.recordsPerSecond,
     )
     setTimeout(this.stopTransfer, this.maxSeconds * 1000)
   }
 
   prepareToTransfer() {
-    setTimeout(() => this.transfer())
+    setTimeout(() => this.transfer(), 1000)
   }
 
   stopTransfer() {
