@@ -205,7 +205,7 @@ export default class Webcam extends Vue {
       this.processing = false
       this.handleInterval = setInterval(
         this.nextIndex,
-        2000 / this.recordsPerSecond,
+        1500 / this.recordsPerSecond,
       )
     }
   }
@@ -219,13 +219,12 @@ export default class Webcam extends Vue {
   }
 
   onReset() {
-    let webcamRef: any = this.$refs.webcam
-    webcamRef.stop()
     clearInterval(this.captureInterval)
     clearInterval(this.handleInterval)
     this.hideWebcam = false
     this.seconds = this.maxSeconds
-    webcamRef = this.$refs.webcam
+    const webcamRef: any = this.$refs.webcam
+    webcamRef.stop()
     webcamRef.start()
   }
 
