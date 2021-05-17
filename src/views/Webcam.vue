@@ -33,6 +33,12 @@
           <v-btn value="1">
             1 FPS
           </v-btn>
+          <v-btn value="2">
+            2 FPS
+          </v-btn>
+          <v-btn value="3">
+            3 FPS
+          </v-btn>
           <v-btn value="5">
             5 FPS
           </v-btn>
