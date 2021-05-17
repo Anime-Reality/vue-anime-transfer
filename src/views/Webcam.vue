@@ -1,90 +1,85 @@
 <template>
-  <v-main class="container">
-    <div class="row">
-      <v-card class="col-md-6">
-        <v-row>
-          <v-col>
-            <h2>Current Camera</h2>
-            <code v-if="device">{{ device.label }}</code>
-            <!-- <v-btn variant="secondary" @click="onCapture" class="px-1 mx-3">
-              TRANSFER
-            </v-btn> -->
-            <v-btn variant="secondary" @click="transfer" class="px-1 mx-10">
-              TRANSFER in {{ seconds.toFixed(0) }}
-              {{ seconds % 3 == 0 ? '...' : seconds % 3 == 1 ? '..' : '.' }}
-            </v-btn>
-            <!-- <v-btn variant="secondary" @click="onStop" class="px-1 mx-3">
-              STOP
-            </v-btn> -->
-          </v-col>
-        </v-row>
-        <v-row>
-          <div class="border">
-            <vue-web-cam
-              ref="webcam"
-              :device-id="deviceId"
-              width="100%"
-              @started="onStarted"
-              @stopped="onStopped"
-              @error="onError"
-              @cameras="onCameras"
-              @camera-change="onCameraChange"
-            />
-          </div>
+  <v-container>
+    <v-row>
+      <v-col>
+        <h2>Current Camera</h2>
+        <code v-if="device">{{ device.label }}</code>
+        <select v-model="camera">
+          <option>-- Select Device --</option>
+          <option
+            v-for="device in devices"
+            :key="device.deviceId"
+            :value="device.deviceId"
+          ></option>
+        </select>
+      </v-col>
+      <v-spacer></v-spacer>
+      <v-col class="mt-3">
+        <v-btn
+          color="secondary"
+          @click="prepareToTransfer"
+          class="px-1 ml-5"
+          style="width: 80%;"
+        >
+          TRANSFER in {{ seconds.toFixed(2) }}
+          <!-- {{ seconds % 3 == 0 ? '...' : seconds % 3 == 1 ? '..' : '.' }} -->
+        </v-btn>
+      </v-col>
+      <v-col class="mt-3">
+        <v-btn
+          color="error"
+          @click="onReset"
+          class="px-1 ml-5"
+          style="width: 80%;"
+        >
+          RESET
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-if="!hideWebcam">
+        <v-card>
+          <vue-web-cam
+            ref="webcam"
+            :device-id="deviceId"
+            width="100%"
+            @started="onStarted"
+            @stopped="onStopped"
+            @error="onError"
+            @cameras="onCameras"
+            @camera-change="onCameraChange"
+          />
+        </v-card>
+      </v-col>
 
-          <div class="row">
-            <div class="col-md-12">
-              <select v-model="camera">
-                <option>-- Select Device --</option>
-                <option
-                  v-for="device in devices"
-                  :key="device.deviceId"
-                  :value="device.deviceId"
-                ></option>
-              </select>
-            </div>
-          </div>
-        </v-row>
-      </v-card>
-      <v-card class="col-md-6 mx-auto">
-        <!-- <figure class="figure" style="width: 100%;">
-          <v-flex d-flex>
-            <v-layout wrap>
-              <v-flex md4 v-for="url in this.urls" :key="url">
-                <v-card class="card-container">
-                  <ImagePainter
-                    :src="url"
-                    style="width: 40px; height: 40px;"
-                  ></ImagePainter>
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </figure> -->
-        <v-img :src="selectedURL" />
-      </v-card>
-    </div>
-    <!-- <v-img :src="selectedURL" :width="300" :height="100" /> -->
-
-    <!-- <div class="row" v-if="urls.length > 0">
-      <v-carousel v-model="model">
-        <v-carousel-item v-for="(url, i) in reverseURL" :key="i">
-          <v-sheet height="100%" tile>
-            <v-row class="fill-height" align="center" justify="center">
-              <v-img :src="url"></v-img>
-            </v-row>
-          </v-sheet>
-        </v-carousel-item>
-      </v-carousel>
-    </div> -->
-  </v-main>
+      <!-- <img :src="selectedURL" style="width: 150px; height: 150px;" /> -->
+      <v-col v-if="hideWebcam">
+        <v-card>
+          <v-img
+            :src="selectedURL"
+            lazy-src="https://i.stack.imgur.com/y9DpT.jpg"
+            contain
+            :aspect-ratio="16 / 9"
+            class="pd-10"
+          >
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <vue-ellipse-progress :loading="processing" />
+              </v-row>
+            </template>
+          </v-img>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
 import { WebCam } from 'vue-web-cam'
 import { Vue, Component, Prop, Watch, PropSync } from 'vue-property-decorator'
 import FileUploadResponse from '@/types/FileUploadResponse'
-
+import VueEllipseProgress from 'vue-ellipse-progress'
+Vue.use(VueEllipseProgress)
 @Component({
   components: {
     'vue-web-cam': WebCam,
@@ -96,6 +91,7 @@ export default class Webcam extends Vue {
   devices: { deviceId: string }[] = []
   model = 0
   colors = ['primary', 'secondary', 'yellow darken-2', 'red', 'orange']
+  processing = false
 
   @PropSync('image', {
     type: String,
@@ -106,24 +102,6 @@ export default class Webcam extends Vue {
     type: Array as () => string[],
   })
   urls!: string[]
-
-  // @PropSync('fileDict', {
-  //   type: Object as () => { [key: string]: FileUploadResponse },
-  // })
-  // fileUploadedDict: { [key: string]: FileUploadResponse } = {}
-
-  // fetchURLs() {
-  //   const keys: string[] = Object.keys(this.fileUploadedDict)
-  //   const keyLength = keys.length
-  //   if (keys.length > 0) {
-  //     for (let index = this.urls.length - 1; index < keyLength; index++) {
-  //       const url = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${
-  //         this.fileUploadedDict[index.toString()].filename
-  //       }`
-  //       this.urls.push(url)
-  //     }
-  //   }
-  // }
 
   currentIndex = 0
   get selectedURL() {
@@ -136,27 +114,19 @@ export default class Webcam extends Vue {
 
   handleInterval: any
 
+  up = 1
   nextIndex() {
-    if (this.currentIndex + 1 < this.urls.length) {
-      this.currentIndex = this.currentIndex + 1
+    if (this.currentIndex + 1 < this.urls.length && this.currentIndex >= 0) {
+      this.currentIndex = this.currentIndex + 1 * this.up
+      if (this.currentIndex + 1 * this.up == this.urls.length) {
+        this.up = -1
+      }
+      if (this.currentIndex + 1 * this.up < 0) {
+        this.up = 1
+      }
     } else {
       this.currentIndex = 0
     }
-  }
-  
-  reverse(arr: string[]) {
-    let output: string[] = []
-    let i = arr.length
-    while (i > 0) {
-      output.push(arr[i - 1])
-      i = i - 1
-    }
-
-    return output
-  }
-
-  get reverseURL() {
-    return this.reverse(this.urls)
   }
 
   @Prop({
@@ -192,9 +162,9 @@ export default class Webcam extends Vue {
   }
 
   maxIndex = 0
-  maxRecords = 5
-  seconds = this.maxRecords
-  recordsPersecond = 1
+  maxSeconds = 1
+  seconds = this.maxSeconds
+  recordsPersecond = 30
   async onCapture() {
     this.seconds = this.seconds - 1 / this.recordsPersecond
     const webcamRef: any = this.$refs.webcam
@@ -207,9 +177,10 @@ export default class Webcam extends Vue {
   onURLSchanged(urls: string[]) {
     if (urls.length == 2) {
       // interval for playing GIFF
+      this.processing = false
       this.handleInterval = setInterval(
         this.nextIndex,
-        1000 / this.recordsPersecond,
+        2000 / this.recordsPersecond,
       )
     }
   }
@@ -222,27 +193,38 @@ export default class Webcam extends Vue {
     console.log('On Stopped Event', stream)
   }
 
-  // onStop() {
-  //   const webcamRef: any = this.$refs.webcam
-  //   clearInterval(this.captureInterval)
-  //   this.seconds = 0
-  //   webcamRef.stop()
-  // }
+  onReset() {
+    clearInterval(this.captureInterval)
+    this.hideWebcam = false
+    this.seconds = this.maxSeconds
+    const webcamRef: any = this.$refs.webcam
+    webcamRef.stop()
+    webcamRef.start()
+  }
 
   captureInterval: any
+  hideWebcam = false
   transfer() {
     const webcamRef: any = this.$refs.webcam
     webcamRef.start()
+    this.hideWebcam = false
+    this.urls = []
+    this.processing = true
     this.captureInterval = setInterval(
       this.onCapture,
       1000 / this.recordsPersecond,
     )
-    setTimeout(this.stopTransfer, this.maxRecords * 1000)
+    setTimeout(this.stopTransfer, this.maxSeconds * 1000)
+  }
+
+  prepareToTransfer() {
+    setTimeout(() => this.transfer())
   }
 
   stopTransfer() {
     clearInterval(this.captureInterval)
-    this.seconds = this.maxRecords
+    this.hideWebcam = true
+    this.seconds = this.maxSeconds
   }
 
   onError(error) {

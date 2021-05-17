@@ -5,11 +5,14 @@
     </v-container>
     <v-container>
       <center>
+        <v-btn class="mt-4 mx-10" :href="fetchURL" target="_blank">
+          Download
+        </v-btn>
         <ShareNetwork
           network="facebook"
           :url="fetchURL"
           title="Do u want to be in anime world? Let's try you can be or not"
-          description="https://anime-transfer.netlify.app/"
+          description="https://anime-transfer.netlify.app/demo2"
           quote="Let's transfer your world to anime reality. - Samsan CP"
           hashtags="AnimeTransfer, SamsanTransfer"
         >
@@ -31,6 +34,13 @@ import { State, Getter, Action, Mutation, namespace } from 'vuex-class'
 import FileUploadResponse from '@/types/FileUploadResponse'
 // import b64toBlob from '@/utils/b64toblob'
 // const DemoModule = getModule(Demo)
+enum RequestStatus {
+  Initial = 'initial',
+  Loading = 'loading',
+  Success = 'success',
+  Failure = 'failure',
+}
+
 @Component({
   components: {
     Webcam,
@@ -41,25 +51,21 @@ export default class Demo2 extends Vue {
   file = ''
   fetchURL = ''
   urls: string[] = []
-  // canDownload = false
-  // downloading = false
-  // uploading = false
   fileUploaded: FileUploadResponse[] = []
-  // fileUploadedDict: { [key: string]: FileUploadResponse } = {}
 
-  transferedImgKey = 0
+  // transferedImgKey = 0
 
-  Preview_image() {
-    console.log(this.file)
-    // this.canDownload = false
-    this.fetchURL = ''
-    if (this.transferedImgKey == 0) {
-      this.transferedImgKey = 1
-    } else {
-      this.transferedImgKey = 0
-    }
-    // this.urls = URL.createObjectURL(this.file)
-  }
+  // Preview_image() {
+  //   console.log(this.file)
+  //   // this.canDownload = false
+  //   this.fetchURL = ''
+  //   if (this.transferedImgKey == 0) {
+  //     this.transferedImgKey = 1
+  //   } else {
+  //     this.transferedImgKey = 0
+  //   }
+  //   // this.urls = URL.createObjectURL(this.file)
+  // }
 
   DataURIToBlob(dataURI: string) {
     const splitDataURI = dataURI.split(',')
@@ -74,6 +80,8 @@ export default class Demo2 extends Vue {
     return new Blob([ia], { type: mimeString })
   }
 
+  uploadStatus: boolean[] = []
+  downloadStatus: boolean[] = []
   async upload(index?: string) {
     const DemoModule: Demo = getModule(Demo)
     try {
@@ -85,17 +93,14 @@ export default class Demo2 extends Vue {
         formData,
       )
       if (response.status == 200) {
-        // if (index) {
-        //   this.fileUploadedDict[index.toString()] = response.data
-        // }
-        const fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${response.data.filename}`
-        // this.urls.push(fetchURL)
-        this.download(response.data.filename)
+        await this.download(response.data.filename)
       } else {
         console.error('something wrong')
       }
+      this.uploadStatus.push(true)
     } catch (error) {
       console.error(error)
+      this.uploadStatus.push(false)
     }
   }
 
@@ -107,12 +112,13 @@ export default class Demo2 extends Vue {
       if (response.status == 200) {
         this.fetchURL = `https://animetransfer-cecc2q6t6a-as.a.run.app/file/download_finished/?filename=${filename}`
         this.urls.push(this.fetchURL)
+        this.downloadStatus.push(true)
         // this.canDownload = true
       }
     } catch (error) {
-      alert('Download file failed')
+      // alert('Download file failed')
+      this.downloadStatus.push(true)
     }
-    return
   }
 }
 </script>
