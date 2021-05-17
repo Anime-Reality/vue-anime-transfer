@@ -205,7 +205,7 @@ export default class Webcam extends Vue {
       this.processing = false
       this.handleInterval = setInterval(
         this.nextIndex,
-        1000 / this.recordsPerSecond,
+        2000 / this.recordsPerSecond,
       )
     }
   }
