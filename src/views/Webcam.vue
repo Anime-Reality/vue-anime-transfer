@@ -36,12 +36,6 @@
           <v-btn value="5">
             5 FPS
           </v-btn>
-          <v-btn value="10">
-            10 FPS
-          </v-btn>
-          <v-btn value="30">
-            30 FPS
-          </v-btn>
         </v-btn-toggle>
       </v-col>
       <v-col class="mt-3">
