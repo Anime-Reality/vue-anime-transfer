@@ -71,7 +71,8 @@ export default Vue.extend({
       },
       {
         text: 'Collection',
-        href: '',
+        href:
+          'https://samsan-transfer.gitbook.io/samsantransfer/products/development/result',
       },
     ],
   }),
